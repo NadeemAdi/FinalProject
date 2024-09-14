@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">ProjetFinal</string>
+    <string-array name="language_array">
+        <item>Anglais</item>
+        <item>Français</item>
+    </string-array>
+</resources>
