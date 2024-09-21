@@ -1,5 +1,25 @@
 <resources>
     <string name="app_name">ProjetFinal</string>
+    <string name="news_title">Titres D\'actualité</string>
+    <string name="clear_favourites">Effacer les favoris</string>
+    <string name="article_title">Titre de l\'article</string>
+    <string name="article_description">Description de l\'article</string>
+    <string name="article_date">Date de l\'article</string>
+    <string name="view_full_article">Voir l\'article complet</string>
+    <string name="add_to_favourites">Ajouter aux favoris</string>
+    <string name="dark">Thème sombre</string>
+    <string name="theme">Thème</string>
+    <string name="language">Langue</string>
+    <string name="news_app">Application d\'actualités</string>
+    <string name="search_news">Rechercher des actualités</string>
+    <string name="refresh_news">Recharger</string>
+    <string name="help">Aide</string>
+    <string name="favourites">Favoris</string>
+    <string name="settings">Paramètres</string>
+    <string name="help_message">Instructions sur la façon d\'utiliser l\'application.</string>
+    <string name="ok">OK</string>
+
+
     <string-array name="language_array">
         <item>Anglais</item>
         <item>Français</item>

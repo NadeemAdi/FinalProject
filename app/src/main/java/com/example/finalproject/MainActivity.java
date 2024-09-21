@@ -18,6 +18,10 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.example.finalproject.FavoritesActivity;
+import com.example.finalproject.NewsItem;
+import com.example.finalproject.R;
+import com.example.finalproject.SettingsActivity;
 import com.google.android.material.snackbar.Snackbar;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -26,6 +30,7 @@ import org.xmlpull.v1.XmlPullParserFactory;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -39,8 +44,9 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // Load the selected theme before setting the content view
+        // Load the selected theme and language before setting the content view
         loadTheme();
+        loadLocale();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -52,6 +58,10 @@ public class MainActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.progressBar);
         refreshButton = findViewById(R.id.refreshButton);
         searchEditText = findViewById(R.id.searchEditText);
+
+        // Set localized text for UI elements
+        refreshButton.setText(getString(R.string.refresh_news));
+        searchEditText.setHint(getString(R.string.search_news));
 
         // Initialize SharedPreferences
         sharedPreferences = getSharedPreferences("NewsAppPrefs", MODE_PRIVATE);
@@ -81,6 +91,7 @@ public class MainActivity extends AppCompatActivity {
             new FetchRSSFeedTask().execute("https://feeds.bbci.co.uk/news/world/us_and_canada/rss.xml");
         });
 
+
         // Set up search filter
         searchEditText.addTextChangedListener(new android.text.TextWatcher() {
             @Override
@@ -107,15 +118,22 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // Load the selected language/locale
+    private void loadLocale() {
+        SharedPreferences sharedPreferences = getSharedPreferences("SettingsPrefs", MODE_PRIVATE);
+        String languageCode = sharedPreferences.getString("app_language", "en"); // Default to English
+        Locale locale = new Locale(languageCode);
+        Locale.setDefault(locale);
+        getBaseContext().getResources().updateConfiguration(
+                getBaseContext().getResources().getConfiguration(),
+                getBaseContext().getResources().getDisplayMetrics()
+        );
+    }
+
+
+    // AsyncTask to fetch RSS Feed
     // AsyncTask to fetch RSS Feed
     private class FetchRSSFeedTask extends AsyncTask<String, Void, ArrayList<NewsItem>> {
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            progressBar.setVisibility(ProgressBar.VISIBLE);
-        }
-
         @Override
         protected ArrayList<NewsItem> doInBackground(String... urls) {
             ArrayList<NewsItem> result = new ArrayList<>();
@@ -168,7 +186,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-
     // Menu setup with Help and Favorites
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -176,33 +193,34 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
+        public boolean onOptionsItemSelected(MenuItem item) {
+            int id = item.getItemId();
 
-        if (id == R.id.action_help) {
-            showHelpDialog();
-            return true;
-        } else if (id == R.id.action_favorites) {
-            // Open FavoritesActivity
-            Intent intent = new Intent(MainActivity.this, FavoritesActivity.class);
-            startActivity(intent);
-            return true;
-        } else if (id == R.id.action_settings) {
-            // Open SettingsActivity (if you have one)
-            Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
-            startActivity(intent);
-            return true;
+            if (id == R.id.action_help) {
+                showHelpDialog();
+                return true;
+            } else if (id == R.id.action_favorites) {
+                // Open FavoritesActivity
+                Intent intent = new Intent(MainActivity.this, FavoritesActivity.class);
+                startActivity(intent);
+                return true;
+            } else if (id == R.id.action_settings) {
+                // Open SettingsActivity (if you have one)
+                Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+                startActivity(intent);
+                return true;
+            }
+            return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
-    }
 
-    // Show Help dialog
+
+
+        // Show Help dialog
     private void showHelpDialog() {
         new AlertDialog.Builder(this)
-                .setTitle("Help")
-                .setMessage("Instructions on how to use the app.")
-                .setPositiveButton("OK", null)
+                .setTitle(getString(R.string.help))
+                .setMessage(getString(R.string.help_message))
+                .setPositiveButton(getString(R.string.ok), null)
                 .show();
     }
 }

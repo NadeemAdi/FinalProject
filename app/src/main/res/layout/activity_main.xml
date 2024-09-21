@@ -10,15 +10,15 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
-        android:title="News App"
+        android:background="@color/white"
+        android:title="@string/news_app"
         android:elevation="4dp" />
 
     <EditText
         android:id="@+id/searchEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Search news..."
+        android:hint="@string/search_news"
         android:inputType="text"
         android:layout_marginBottom="8dp" />
 
@@ -33,7 +33,7 @@
         android:id="@+id/refreshButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Refresh News"
+        android:text="@string/refresh_news"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="16dp" />
 
