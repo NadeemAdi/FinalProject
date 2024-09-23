@@ -1,7 +1,5 @@
 package com.example.finalproject;
 
-
-
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -29,8 +27,11 @@ import org.xmlpull.v1.XmlPullParserFactory;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Objects;
 
+/**
+ * MainActivity displays a list of news articles fetched from an RSS feed.
+ * Users can view articles, search for specific ones, refresh the feed, and navigate to the article details or favorites.
+ */
 public class MainActivity extends AppCompatActivity {
 
     private ListView listView;
@@ -41,6 +42,13 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<NewsItem> newsList = new ArrayList<>();
     private SharedPreferences sharedPreferences;
 
+    /**
+     * Called when the activity is created.
+     * It sets up the toolbar, list, and various buttons, and starts fetching news from the RSS feed.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after previously being shut down,
+     *                           this Bundle contains the most recent data. Otherwise, it is null.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // Load the selected theme before setting the content view
@@ -48,31 +56,33 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Set up Toolbar
+        // Set up the toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
+
+        // Initialize UI components
         listView = findViewById(R.id.listView);
         progressBar = findViewById(R.id.progressBar);
         refreshButton = findViewById(R.id.refreshButton);
         searchEditText = findViewById(R.id.searchEditText);
 
-
-        // Initialize SharedPreferences
+        // Initialize SharedPreferences for saving data like the last viewed article
         sharedPreferences = getSharedPreferences("NewsAppPrefs", MODE_PRIVATE);
 
+        // Set up the ListView with an ArrayAdapter for displaying news titles
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, new ArrayList<>());
         listView.setAdapter(adapter);
 
-        // Fetch news initially
+        // Fetch news articles from the RSS feed
         new FetchRSSFeedTask().execute("https://feeds.bbci.co.uk/news/world/us_and_canada/rss.xml");
 
-        // Set up ListView item click listener
+        // Handle ListView item clicks to open article details
         listView.setOnItemClickListener((parent, view, position, id) -> {
             Intent intent = new Intent(MainActivity.this, ArticleDetailActivity.class);
             intent.putExtra("newsItem", newsList.get(position));
 
-            // Save last viewed article using SharedPreferences
+            // Save the last viewed article in SharedPreferences
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putString("lastViewedTitle", newsList.get(position).getTitle());
             editor.apply();
@@ -80,13 +90,13 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        // Set up refresh button click listener
+        // Handle refresh button click to fetch the latest news articles
         refreshButton.setOnClickListener(v -> {
             Toast.makeText(MainActivity.this, "Refreshing news...", Toast.LENGTH_SHORT).show();
             new FetchRSSFeedTask().execute("https://feeds.bbci.co.uk/news/world/us_and_canada/rss.xml");
         });
 
-        // Set up search filter
+        // Set up search functionality to filter news titles based on user input
         searchEditText.addTextChangedListener(new android.text.TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -101,7 +111,10 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    // Load the selected theme
+    /**
+     * Loads the selected theme (dark or light) from the user's preferences.
+     * This method is called before setting the content view to apply the theme.
+     */
     private void loadTheme() {
         SharedPreferences sharedPreferences = getSharedPreferences("SettingsPrefs", MODE_PRIVATE);
         boolean isDarkTheme = sharedPreferences.getBoolean("dark_theme", false);
@@ -112,15 +125,27 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // AsyncTask to fetch RSS Feed
+    /**
+     * AsyncTask to fetch news articles from an RSS feed in the background.
+     * It parses the feed and updates the ListView with article titles.
+     */
     private class FetchRSSFeedTask extends AsyncTask<String, Void, ArrayList<NewsItem>> {
 
+        /**
+         * Shows the progress bar before fetching the news articles.
+         */
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
             progressBar.setVisibility(ProgressBar.VISIBLE);
         }
 
+        /**
+         * Fetches the RSS feed, parses the XML, and builds a list of news articles.
+         *
+         * @param urls The URL of the RSS feed to fetch.
+         * @return A list of NewsItem objects representing the articles.
+         */
         @Override
         protected ArrayList<NewsItem> doInBackground(String... urls) {
             ArrayList<NewsItem> result = new ArrayList<>();
@@ -135,6 +160,7 @@ public class MainActivity extends AppCompatActivity {
                 NewsItem currentItem = null;
                 boolean insideItem = false;
 
+                // Parse the XML data
                 while (eventType != XmlPullParser.END_DOCUMENT) {
                     if (eventType == XmlPullParser.START_TAG) {
                         if (parser.getName().equalsIgnoreCase("item")) {
@@ -162,6 +188,12 @@ public class MainActivity extends AppCompatActivity {
             return result;
         }
 
+        /**
+         * Called when the fetching is done.
+         * Updates the ListView with the news article titles.
+         *
+         * @param result The list of news articles fetched from the RSS feed.
+         */
         @Override
         protected void onPostExecute(ArrayList<NewsItem> result) {
             progressBar.setVisibility(ProgressBar.GONE);
@@ -174,13 +206,24 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // Menu setup with Help and Favorites
+    /**
+     * Inflates the menu with options like Help, Favorites, and Settings.
+     *
+     * @param menu The options menu.
+     * @return true if the menu was created successfully.
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
         return true;
     }
 
+    /**
+     * Handles the actions when menu items are selected.
+     *
+     * @param item The selected menu item.
+     * @return true if the action was handled.
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
@@ -207,14 +250,14 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    // Show Help dialog
+    /**
+     * Shows a Help dialog with information about how to use the app.
+     */
     private void showHelpDialog() {
         new AlertDialog.Builder(this)
                 .setTitle(getString(R.string.help))
                 .setMessage(getString(R.string.help_message))
-                .setPositiveButton(getString(R.string.ok),null)
+                .setPositiveButton(getString(R.string.ok), null)
                 .show();
     }
-
 }
-
