@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">ProjetFinal</string>
     <string name="news_title">Titres D\'actualité</string>
-    <string name="clear_favourites">Effacer les favoris</string>
+    <string name="clear_favourites">Supprimer les favoris</string>
     <string name="article_title">Titre de l\'article</string>
     <string name="article_description">Description de l\'article</string>
     <string name="article_date">Date de l\'article</string>
@@ -18,6 +18,14 @@
     <string name="settings">Paramètres</string>
     <string name="help_message">Instructions sur la façon d\'utiliser l\'application.</string>
     <string name="ok">OK</string>
+    <string name="remove_favorite_confirmation">Etes-vous sûr de vouloir supprimer cet article des favoris</string>
+    <string name="remove_favorite_title">Supprimer les favoris</string>
+    <string name="no_favorites_message">Il n\'y a aucun favori à supprimer</string>
+    <string name="clear_favorites_title">Supprimer tous les favoris</string>
+    <string name="clear_favorites_confirmation">Etes-vous sûr de vouloir supprimer tous les articles favoris ?</string>
+    <string name="article_removed_message">Article supprimé des favoris</string>
+    <string name="yes">Oui</string>
+    <string name="no">Non</string>
 
 
     <string-array name="language_array">

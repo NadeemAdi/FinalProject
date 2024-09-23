@@ -23,6 +23,9 @@ public class FavoritesActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_favorites);
 
+        Button clearButton = findViewById(R.id.clearFavoritesButton);
+        clearButton.setOnClickListener(v ->showDeleteAllConfirmationDialog());
+
         // Initialize database and fetch favorites
         myDb = new DatabaseHelper(this);
         favoriteArticles = myDb.getFavoriteArticles();
@@ -47,15 +50,35 @@ public class FavoritesActivity extends AppCompatActivity {
     // Add showDeleteConfirmationDialog method here
     public void showDeleteConfirmationDialog(NewsItem article, int position) {
         new AlertDialog.Builder(this)
-                .setTitle("Remove Favorite")
-                .setMessage("Are you sure you want to remove this article from favorites?")
-                .setPositiveButton("Yes", (dialog, which) -> {
+                .setTitle(getString(R.string.remove_favorite_title))
+                .setMessage(getString(R.string.remove_favorite_confirmation))
+                .setPositiveButton(getString(R.string.yes), (dialog, which) -> {
                     myDb.removeFavorite(article.getTitle());  // Remove from DB
                     favoriteArticles.remove(position);  // Remove from list
                     adapter.notifyDataSetChanged();  // Refresh adapter
-                    Toast.makeText(this, "Article removed from favorites", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, getString(R.string.article_removed_message), Toast.LENGTH_SHORT).show();
                 })
-                .setNegativeButton("No", null)
+                .setNegativeButton(getString(R.string.no), null)
                 .show();
     }
+
+    public void showDeleteAllConfirmationDialog() {
+        if (favoriteArticles.isEmpty()) {
+            // Show a toast if there are no favorites
+            Toast.makeText(this, getString(R.string.no_favorites_message), Toast.LENGTH_SHORT).show();
+        } else {
+            // Show confirmation dialog if there are favorites
+            new AlertDialog.Builder(this)
+                    .setTitle(getString(R.string.clear_favorites_title))
+                    .setMessage(getString(R.string.clear_favorites_confirmation))
+                    .setPositiveButton(getString(R.string.yes), (dialog, which) -> {
+                        myDb.clearFavorites();  // Remove from DB
+                        favoriteArticles.clear(); // Clear the list in memory
+                        adapter.notifyDataSetChanged(); // Refresh the ListView
+                    })
+                    .setNegativeButton(getString(R.string.no), null)
+                    .show();
+        }
+    }
+
 }

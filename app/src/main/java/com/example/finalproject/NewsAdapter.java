@@ -16,10 +16,10 @@ import java.util.List;
 
 public class NewsAdapter extends ArrayAdapter<NewsItem> implements Filterable {
 
-    private Context context;
-    private List<NewsItem> originalNewsList;
-    private List<NewsItem> filteredNewsList;
-    private DatabaseHelper myDb;
+    private final Context context;
+    private final List<NewsItem> originalNewsList;
+    private final List<NewsItem> filteredNewsList;
+    private final DatabaseHelper myDb;
 
     // Updated constructor to accept DatabaseHelper
     public NewsAdapter(@NonNull Context context, List<NewsItem> newsList, DatabaseHelper myDb) {
@@ -66,6 +66,7 @@ public class NewsAdapter extends ArrayAdapter<NewsItem> implements Filterable {
         return filteredNewsList.get(position);
     }
 
+    @NonNull
     @Override
     public Filter getFilter() {
         return new Filter() {

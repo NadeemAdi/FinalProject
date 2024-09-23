@@ -18,7 +18,14 @@
     <string name="ok">OK</string>
     <string name="favourites">Favourites</string>
     <string name="settings">Settings</string>
-
+    <string name="remove_favorite_confirmation">Are you sure you want to remove this article from favourites?</string>
+    <string name="remove_favorite_title">Remove Favourites</string>
+    <string name="no_favorites_message">There are no favorites to delete</string>
+    <string name="clear_favorites_title">Clear All Favourites</string>
+    <string name="clear_favorites_confirmation">Are you sure you want to delete all favorite articles?</string>
+    <string name="article_removed_message">Article removed from favorites</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 
     <string-array name="language_array">
         <item>English</item>

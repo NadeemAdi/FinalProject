@@ -41,6 +41,7 @@ dependencies {
 
     implementation("androidx.core:core:1.10.1")
     implementation("androidx.core:core-ktx:1.10.1")
+    implementation ("androidx.cardview:cardview:1.0.0")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)

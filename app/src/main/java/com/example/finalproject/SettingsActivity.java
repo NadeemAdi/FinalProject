@@ -5,17 +5,15 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.Switch;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-
-import com.example.finalproject.MainActivity;
-import com.example.finalproject.R;
 
 import java.util.Locale;
 
@@ -27,12 +25,12 @@ public class SettingsActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // Load theme before setting the content view
+        // Load the theme before setting the content view
         loadTheme();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
-        // Initialize the theme switch
+        // Initialize views and SharedPreferences
         themeSwitch = findViewById(R.id.themeSwitch);
         languageSpinner = findViewById(R.id.languageSpinner);
         sharedPreferences = getSharedPreferences("SettingsPrefs", MODE_PRIVATE);
@@ -43,35 +41,34 @@ public class SettingsActivity extends AppCompatActivity {
 
         // Theme switch listener
         themeSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            // Save theme preference
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putBoolean("dark_theme", isChecked);
             editor.apply();
 
-            // Restart the app to apply the theme change globally
-            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
-            finish();
+            // Restart the activity to apply theme changes
+            restartMainActivity();
         });
 
-        // Set up the language spinner
+        // Set up the language spinner with available options
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.language_array, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         languageSpinner.setAdapter(adapter);
 
-        // Set the current language based on preferences
+        // Set the spinner position based on saved language preference
         String currentLang = sharedPreferences.getString("app_language", "en");
         if (currentLang.equals("fr")) {
-            languageSpinner.setSelection(1);  // Set French if saved
+            languageSpinner.setSelection(1); // Set French if saved
         } else {
-            languageSpinner.setSelection(0);  // Default is English
+            languageSpinner.setSelection(0); // Default to English
         }
 
         // Language spinner listener
         languageSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                // Switch language between English and French
                 String selectedLanguage = position == 0 ? "en" : "fr";
                 changeLanguage(selectedLanguage);
             }
@@ -85,7 +82,7 @@ public class SettingsActivity extends AppCompatActivity {
 
     // Load the selected theme
     private void loadTheme() {
-        SharedPreferences sharedPreferences = getSharedPreferences("SettingsPrefs", MODE_PRIVATE);
+        sharedPreferences = getSharedPreferences("SettingsPrefs", MODE_PRIVATE);
         boolean isDarkTheme = sharedPreferences.getBoolean("dark_theme", false);
         if (isDarkTheme) {
             setTheme(R.style.Theme_FinalProject_Dark); // Use dark theme
@@ -94,26 +91,34 @@ public class SettingsActivity extends AppCompatActivity {
         }
     }
 
-    // Change the language and restart the app to apply changes
+    // Change the language without restarting the activity
     private void changeLanguage(String languageCode) {
-        // Update the app's locale
+        // Update the app's locale using ContextWrapper
         Locale locale = new Locale(languageCode);
         Locale.setDefault(locale);
         Resources resources = getResources();
         Configuration config = resources.getConfiguration();
-        DisplayMetrics dm = resources.getDisplayMetrics();
         config.setLocale(locale);
-        resources.updateConfiguration(config, dm);
+        getBaseContext().createConfigurationContext(config); // Update locale using ContextWrapper
 
         // Save language preference
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("app_language", languageCode);
         editor.apply();
 
-        // Restart the activity to apply language change
-        Intent refresh = new Intent(this, MainActivity.class);
-        refresh.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(refresh);
-        finish(); // Close the current activity
+        // Show a message to the user
+        Toast.makeText(this, "Language changed to " + (languageCode.equals("fr") ? "French" : "English"), Toast.LENGTH_SHORT).show();
+    }
+
+    // Restart the MainActivity to apply theme changes (not for language)
+    private void restartMainActivity() {
+        try {
+            Intent intent = new Intent(getApplicationContext(), MainActivity.class); // Restart MainActivity
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            finish(); // Close the settings activity
+        } catch (Exception e) {
+            Log.e("SettingsActivity", "Error restarting activity: " + e.getMessage());
+        }
     }
 }

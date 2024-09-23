@@ -3,14 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/action_help"
-        android:title="@string/help"
-        app:showAsAction="never" />
-
-    <item
         android:id="@+id/action_favorites"
         android:title="@string/favourites"
         android:orderInCategory="100"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_help"
+        android:title="@string/help"
         app:showAsAction="never" />
 
     <item
